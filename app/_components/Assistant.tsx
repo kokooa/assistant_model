@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -12,11 +13,13 @@ import {
   THREADS_TODAY,
   THREADS_WEEK,
   THREADS_OLDER,
-  SOURCES,
   PERMS,
   FOLLOWUPS,
   type Thread,
 } from "../_data/mock";
+import type { SearchHit } from "@/lib/rag";
+
+const INITIAL_QUESTION = "출산휴가는 며칠이고 어떻게 신청해? 분할해서 쓸 수도 있어?";
 
 interface ChatMessage {
   who: "user" | "ai";
@@ -38,7 +41,7 @@ function initialMessages(): ChatMessage[] {
   return [
     {
       who: "user",
-      text: "출산휴가는 며칠이고 어떻게 신청해? 분할해서 쓸 수도 있어?",
+      text: INITIAL_QUESTION,
       stamp: "09:31",
     },
     {
@@ -86,26 +89,6 @@ function initialMessages(): ChatMessage[] {
       ),
     },
   ];
-}
-
-function simulateReply(prompt: string): ChatMessage {
-  return {
-    who: "ai",
-    stamp: nowStamp(),
-    body: (
-      <>
-        <p>
-          질문 주신 내용을 사내 정책 문서에서 찾아봤어요. 권한 범위 안의 문서만 참고했어요.
-        </p>
-        <ul>
-          <li>배우자 출산휴가는 <strong>10일</strong>(유급)이고, 1회 분할 사용이 가능해요. <Cite n={1} /></li>
-          <li>출산일로부터 <strong>90일 이내</strong>에 신청해야 해요. <Cite n={3} /></li>
-          <li>근태 시스템에서 &ldquo;배우자 출산휴가&rdquo;로 신청하면 돼요. <Cite n={4} /></li>
-        </ul>
-        <p>관련 규정 원문을 오른쪽 출처에서 바로 열어볼 수 있어요. 더 궁금한 점이 있나요?</p>
-      </>
-    ),
-  };
 }
 
 function ThreadItem({ t, active, onClick }: { t: Thread; active: boolean; onClick: () => void }) {
@@ -158,7 +141,9 @@ function Message({ m }: { m: ChatMessage }) {
             높은 신뢰도
           </span>
         </div>
-        <div className="msg-body">{m.body}</div>
+        <div className="msg-body">
+          {m.body ?? m.text?.split("\n").filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
+        </div>
         <div className="msg-actions">
           <button className="msg-action" title="도움돼요">{I.thumbsUp({ size: 14 })}</button>
           <button className="msg-action" title="아쉬워요">{I.thumbsDown({ size: 14 })}</button>
@@ -179,8 +164,30 @@ export function Assistant() {
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>(() => initialMessages());
+  const [hits, setHits] = useState<SearchHit[]>([]);
+  const [searching, setSearching] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
+
+  const runSearch = useCallback(async (text: string) => {
+    const q = text.trim();
+    if (!q) return;
+    setSearching(true);
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+      const data = res.ok ? await res.json() : { hits: [] };
+      setHits(data.hits ?? []);
+    } catch {
+      setHits([]);
+    } finally {
+      setSearching(false);
+    }
+  }, []);
+
+  // 우측 출처 패널을 화면에 보이는 대화(초기 질문)와 맞춰 채운다.
+  useEffect(() => {
+    runSearch(INITIAL_QUESTION);
+  }, [runSearch]);
 
   useEffect(() => {
     if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
@@ -200,16 +207,75 @@ export function Assistant() {
     t.style.height = Math.min(t.scrollHeight, 200) + "px";
   }, [draft]);
 
-  const send = () => {
+  const send = async () => {
     const text = draft.trim();
     if (!text || sending) return;
-    setMessages((m) => [...m, { who: "user", text, stamp: nowStamp() }]);
     setDraft("");
     setSending(true);
-    setTimeout(() => {
-      setMessages((m) => [...m, simulateReply(text)]);
+    setMessages((m) => [...m, { who: "user", text, stamp: nowStamp() }]);
+
+    const setAnswer = (next: string) =>
+      setMessages((m) => {
+        const copy = m.slice();
+        for (let i = copy.length - 1; i >= 0; i--) {
+          if (copy[i].who === "ai") {
+            copy[i] = { ...copy[i], text: next };
+            break;
+          }
+        }
+        return copy;
+      });
+
+    try {
+      const res = await fetch("/api/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ q: text }),
+      });
+      if (!res.ok || !res.body) throw new Error("stream-failed");
+
+      setMessages((m) => [...m, { who: "ai", text: "", stamp: nowStamp() }]);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+      let answer = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const lines = buf.split("\n");
+        buf = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          let ev: { type?: string; hits?: SearchHit[]; text?: string; message?: string };
+          try {
+            ev = JSON.parse(line);
+          } catch {
+            continue;
+          }
+          if (ev.type === "sources") setHits(ev.hits ?? []);
+          else if (ev.type === "delta") {
+            answer += ev.text ?? "";
+            setAnswer(answer);
+          } else if (ev.type === "error") {
+            answer += `${answer ? "\n\n" : ""}⚠️ ${ev.message ?? "LLM 호출 실패"}`;
+            setAnswer(answer);
+          }
+        }
+      }
+    } catch {
+      setMessages((m) => [
+        ...m,
+        {
+          who: "ai",
+          text: "LLM에 연결하지 못했어요. Ollama가 실행 중인지 확인해 주세요.",
+          stamp: nowStamp(),
+        },
+      ]);
+    } finally {
       setSending(false);
-    }, 1400);
+    }
   };
 
   const lastIsAi = messages.length > 0 && messages[messages.length - 1].who === "ai";
@@ -226,6 +292,7 @@ export function Assistant() {
             onClick={() => {
               setMessages(initialMessages());
               setThread("new");
+              runSearch(INITIAL_QUESTION);
               textRef.current?.focus();
             }}
           >
@@ -270,7 +337,7 @@ export function Assistant() {
             {messages.map((m, i) => (
               <Message key={i} m={m} />
             ))}
-            {sending && (
+            {sending && !lastIsAi && (
               <div className="msg ai">
                 <div className="msg-av">m</div>
                 <div>
@@ -344,31 +411,39 @@ export function Assistant() {
       <aside className="asst-r">
         <div className="r-sec">
           <div className="r-sec-title">
-            <span>출처 · {SOURCES.length}</span>
+            <span>출처 · {hits.length}</span>
             <button className="btn btn-ghost" style={{ height: 22, padding: "0 6px", fontSize: 11 }}>
               {I.filter({ size: 11 })}
             </button>
           </div>
-          {SOURCES.map((s) => (
-            <div key={s.n} className="src">
-              <div className="src-num">{s.n}</div>
-              <div>
-                <div className="src-title">{s.title}</div>
-                <div className="src-meta">
-                  <span>{s.type}</span>
-                  <span>·</span>
-                  <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 180 }}>
-                    {s.path}
-                  </span>
-                  {s.locked && <span className="lock">{I.lock({ size: 10 })}</span>}
+          {hits.length === 0 ? (
+            <div style={{ padding: "10px 0", fontSize: 12, color: "var(--ink-3)" }}>
+              {searching
+                ? "사내 문서를 검색하고 있어요…"
+                : "사내 문서에서 관련 내용을 찾지 못했어요."}
+            </div>
+          ) : (
+            hits.map((h, i) => (
+              <div key={`${h.docId}-${h.heading}-${i}`} className="src">
+                <div className="src-num">{i + 1}</div>
+                <div>
+                  <div className="src-title">{h.title}</div>
+                  <div className="src-meta">
+                    <span>{h.type}</span>
+                    <span>·</span>
+                    <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 170 }}>
+                      {h.heading}
+                    </span>
+                    {h.locked && <span className="lock">{I.lock({ size: 10 })}</span>}
+                  </div>
+                </div>
+                <div className="src-rel">
+                  <div style={{ textAlign: "right" }}>{Math.round(h.score * 100)}%</div>
+                  <RelBar val={h.score} />
                 </div>
               </div>
-              <div className="src-rel">
-                <div style={{ textAlign: "right" }}>{Math.round(s.rel * 100)}%</div>
-                <RelBar val={s.rel} />
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         <div className="r-sec">
