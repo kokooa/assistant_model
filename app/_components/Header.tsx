@@ -5,7 +5,6 @@ import { I } from "./icons";
 
 const TITLES: Record<string, string> = {
   "/": "홈",
-  "/ask": "물어보기",
   "/sources": "지식 소스",
 };
 

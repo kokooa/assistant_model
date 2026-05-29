@@ -1,7 +1,9 @@
 "use client";
 
 import {
+  createContext,
   useCallback,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -33,8 +35,63 @@ function nowStamp(): string {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
+const CiteContext = createContext<(n: number) => void>(() => {});
+
 function Cite({ n }: { n: number }) {
-  return <span className="cite">{n}</span>;
+  const onCite = useContext(CiteContext);
+  return (
+    <span
+      className="cite"
+      role="button"
+      tabIndex={0}
+      title={`출처 ${n} 보기`}
+      style={{ cursor: "pointer" }}
+      onClick={() => onCite(n)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") onCite(n);
+      }}
+    >
+      {n}
+    </span>
+  );
+}
+
+// 스트리밍 답변 텍스트의 [n] 인용을 클릭 가능한 Cite 로 변환.
+function renderAnswerText(text: string | undefined): ReactNode {
+  if (!text) return null;
+  return text
+    .split("\n")
+    .filter(Boolean)
+    .map((line, li) => (
+      <p key={li}>
+        {line.split(/(\[\d+\])/g).map((part, pi) => {
+          const m = part.match(/^\[(\d+)\]$/);
+          return m ? <Cite key={pi} n={Number(m[1])} /> : <span key={pi}>{part}</span>;
+        })}
+      </p>
+    ));
+}
+
+// 검색 점수로 신뢰도 산출 (bigram 코사인 스케일 기준).
+function confidence(hits: SearchHit[]): { label: string; bars: number; note: string } {
+  if (hits.length === 0)
+    return { label: "근거 없음", bars: 0, note: "사내 문서에서 관련 내용을 찾지 못했어요." };
+  const top = hits[0].score;
+  const strong = hits.filter((h) => h.score >= top * 0.6).length;
+  let label = "낮음";
+  let bars = 2;
+  if (top >= 0.3) {
+    label = "높음";
+    bars = 5;
+  } else if (top >= 0.15) {
+    label = "보통";
+    bars = 3;
+  }
+  return {
+    label,
+    bars,
+    note: `상위 출처 ${hits.length}건 중 ${strong}건이 높은 관련도예요. 최상위 근거: ${hits[0].title} (관련도 ${Math.round(top * 100)}%).`,
+  };
 }
 
 function initialMessages(): ChatMessage[] {
@@ -141,9 +198,7 @@ function Message({ m }: { m: ChatMessage }) {
             높은 신뢰도
           </span>
         </div>
-        <div className="msg-body">
-          {m.body ?? m.text?.split("\n").filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
-        </div>
+        <div className="msg-body">{m.body ?? renderAnswerText(m.text)}</div>
         <div className="msg-actions">
           <button className="msg-action" title="도움돼요">{I.thumbsUp({ size: 14 })}</button>
           <button className="msg-action" title="아쉬워요">{I.thumbsDown({ size: 14 })}</button>
@@ -166,8 +221,19 @@ export function Assistant() {
   const [messages, setMessages] = useState<ChatMessage[]>(() => initialMessages());
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [searching, setSearching] = useState(false);
+  const [activeSrc, setActiveSrc] = useState<number | null>(null);
   const chatRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
+  const srcRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
+  // 인용 [n] 클릭 → 해당 출처로 스크롤 + 잠깐 하이라이트.
+  const handleCite = useCallback((n: number) => {
+    setActiveSrc(n);
+    srcRefs.current[n]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    window.setTimeout(() => setActiveSrc((cur) => (cur === n ? null : cur)), 1600);
+  }, []);
+
+  const conf = confidence(hits);
 
   const runSearch = useCallback(async (text: string) => {
     const q = text.trim();
@@ -281,6 +347,7 @@ export function Assistant() {
   const lastIsAi = messages.length > 0 && messages[messages.length - 1].who === "ai";
 
   return (
+    <CiteContext.Provider value={handleCite}>
     <div className="asst" data-layout="3pane">
       {/* LEFT */}
       <aside className="asst-l">
@@ -395,7 +462,7 @@ export function Assistant() {
               <button className="ic-btn" title="소스 지정">{I.database({ size: 16 })}</button>
               <button className="ic-btn" title="음성">{I.mic({ size: 16 })}</button>
               <span className="chip" style={{ marginLeft: 4 }}>
-                {I.cpu({ size: 11 })} axhub LLM · 사내
+                {I.cpu({ size: 11 })} Ollama · 로컬
               </span>
               <div className="spacer" />
               <span style={{ fontSize: 11, color: "var(--ink-4)", marginRight: 8 }}>{draft.length}/8000</span>
@@ -424,7 +491,23 @@ export function Assistant() {
             </div>
           ) : (
             hits.map((h, i) => (
-              <div key={`${h.docId}-${h.heading}-${i}`} className="src">
+              <div
+                key={`${h.docId}-${h.heading}-${i}`}
+                className="src"
+                ref={(el) => {
+                  srcRefs.current[i + 1] = el;
+                }}
+                style={
+                  activeSrc === i + 1
+                    ? {
+                        background: "rgba(91,77,219,0.10)",
+                        outline: "1px solid var(--acc)",
+                        borderRadius: "var(--r-3)",
+                        transition: "background .2s",
+                      }
+                    : { transition: "background .2s" }
+                }
+              >
                 <div className="src-num">{i + 1}</div>
                 <div>
                   <div className="src-title">{h.title}</div>
@@ -466,13 +549,15 @@ export function Assistant() {
           <div className="r-sec-title">신뢰도</div>
           <div style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: "var(--r-3)", padding: 14 }}>
             <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <div style={{ fontFamily: "var(--mono)", fontSize: 22, fontWeight: 500 }}>높음</div>
+              <div style={{ fontFamily: "var(--mono)", fontSize: 22, fontWeight: 500 }}>{conf.label}</div>
               <div className="conf-bar">
-                <i className="on" /><i className="on" /><i className="on" /><i className="on" /><i />
+                {[0, 1, 2, 3, 4].map((k) => (
+                  <i key={k} className={k < conf.bars ? "on" : ""} />
+                ))}
               </div>
             </div>
             <p style={{ fontSize: 12, color: "var(--ink-3)", lineHeight: 1.5, margin: "8px 0 0" }}>
-              인용한 출처 4건 중 3건이 HR이 관리하는 공식 휴가 규정 문서이고, 최근 60일 내 검토됐어요.
+              {conf.note}
             </p>
           </div>
 
@@ -498,5 +583,6 @@ export function Assistant() {
         </div>
       </aside>
     </div>
+    </CiteContext.Provider>
   );
 }

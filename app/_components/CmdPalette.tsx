@@ -31,7 +31,7 @@ export function CmdPalette({ onClose }: { onClose: () => void }) {
     router.push(href);
     onClose();
   };
-  const ask = (text: string) => go(`/ask?q=${encodeURIComponent(text)}`);
+  const ask = (text: string) => go(`/?q=${encodeURIComponent(text)}`);
 
   const items: CmdItem[] = (
     [
@@ -40,7 +40,7 @@ export function CmdPalette({ onClose }: { onClose: () => void }) {
         ic: "sparkle",
         label: q ? `modle에게 물어보기: "${q}"` : "새 대화 시작하기",
         meta: "↵",
-        action: () => (q ? ask(q) : go("/ask")),
+        action: () => (q ? ask(q) : go("/")),
       },
       { grp: "이동", ic: "home", label: "홈으로", meta: "G H", action: () => go("/") },
       { grp: "이동", ic: "database", label: "지식 소스", meta: "G S", action: () => go("/sources") },

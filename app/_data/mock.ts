@@ -10,8 +10,7 @@ export interface NavItem {
 }
 
 export const NAV: NavItem[] = [
-  { id: "home", label: "홈", icon: "home", group: "workspace", href: "/" },
-  { id: "ask", label: "물어보기", icon: "sparkle", group: "workspace", href: "/ask", badge: "AI" },
+  { id: "home", label: "물어보기", icon: "sparkle", group: "workspace", href: "/", badge: "AI" },
   { id: "sources", label: "지식 소스", icon: "database", group: "workspace", href: "/sources" },
   { id: "hr", label: "HR · 휴가", icon: "umbrella", group: "knowledge", href: "/sources?cat=hr" },
   { id: "work", label: "근무 규정", icon: "doc", group: "knowledge", href: "/sources?cat=work" },

@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Push 의 조직/권한 모델 재사용 — 권한 인식 검색의 기반.
+enum Role {
+  ADMIN
+  DEPT_ADMIN
+  MEMBER
+}
+
+model Department {
+  id        String       @id @default(cuid())
+  name      String       @unique
+  parentId  String?
+  parent    Department?  @relation("DeptTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children  Department[] @relation("DeptTree")
+  users     User[]
+  createdAt DateTime     @default(now())
+
+  @@index([parentId])
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  name         String
+  image        String?
+  role         Role        @default(MEMBER)
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  createdAt    DateTime    @default(now())
+
+  @@index([departmentId])
+}

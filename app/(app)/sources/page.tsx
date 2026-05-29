@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { I, type IconName } from "../_components/icons";
+import { I, type IconName } from "@/app/_components/icons";
 
 interface KnowledgeDoc {
   title: string;
@@ -40,7 +40,7 @@ export default function SourcesPage() {
               modle이 답변에 사용하는 사내 문서예요. 권한 범위 안의 문서만 검색·인용해요.
             </p>
           </div>
-          <button className="btn btn-acc" onClick={() => router.push("/ask")}>
+          <button className="btn btn-acc" onClick={() => router.push("/")}>
             {I.sparkle({ size: 14 })} 물어보기
           </button>
         </div>
@@ -64,7 +64,7 @@ export default function SourcesPage() {
           </div>
           <div>
             {DOCS.map((d) => (
-              <div key={d.title} className="doc-item" onClick={() => router.push(`/ask?q=${encodeURIComponent(d.title + " 알려줘")}`)}>
+              <div key={d.title} className="doc-item" onClick={() => router.push(`/?q=${encodeURIComponent(d.title + " 알려줘")}`)}>
                 <div className="doc-thumb">{I[d.icon]({ size: 14 })}</div>
                 <div style={{ minWidth: 0 }}>
                   <div className="doc-title">

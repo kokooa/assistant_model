@@ -1,16 +1,20 @@
-import { search, MOCK_USER } from "@/lib/rag";
+import { search } from "@/lib/rag";
+import { getUserContext } from "@/lib/session";
 import { streamGroundedAnswer } from "@/lib/llm";
 
 export const runtime = "nodejs";
 
-// Phase 3: 질문 → 권한 필터 검색 → 근거 주입 → LLM 답변 스트리밍.
+// 질문 → (로그인 권한)검색 → 근거 주입 → LLM 답변 스트리밍.
 // 응답은 NDJSON 스트림: {type:"sources"} 한 줄 먼저, 이어서 {type:"delta"} 토큰들, {type:"done"}.
 export async function POST(req: Request) {
+  const user = await getUserContext();
+  if (!user) return new Response("unauthorized", { status: 401 });
+
   const { q } = await req.json().catch(() => ({ q: "" }));
   const question = typeof q === "string" ? q.trim() : "";
   if (!question) return new Response("missing q", { status: 400 });
 
-  const hits = await search(question, MOCK_USER, 6);
+  const hits = await search(question, user, 6);
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
