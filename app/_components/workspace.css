@@ -1,0 +1,136 @@
+/* =========================================================================
+   작업창(Workspace/Chat) 스타일 — tokens.css 의 변수 사용
+   사용법: tokens.css 를 먼저 import, 최상단을 <div className="workspace"> 로 감싸기.
+   .workspace 는 height:100vh / overflow:hidden 풀스크린 레이아웃입니다.
+   ========================================================================= */
+.workspace {
+  height: 100vh; overflow: hidden;
+  background: var(--bg); color: var(--ink);
+  font-family: var(--sans); font-size: 14px; line-height: 1.5;
+  letter-spacing: -0.011em; -webkit-font-smoothing: antialiased;
+}
+.workspace *, .workspace *::before, .workspace *::after { box-sizing: border-box; }
+.workspace button { border: 0; background: none; cursor: pointer; padding: 0; font: inherit; color: inherit; }
+.workspace input { border: 0; outline: none; background: none; font: inherit; color: inherit; }
+
+.workspace .ws-app { display: grid; grid-template-columns: 268px 1fr; height: 100vh; }
+
+/* Sidebar */
+.workspace .ws-sb { background: var(--sidebar); border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 16px 14px; }
+.workspace .ws-new { display: flex; align-items: center; justify-content: center; gap: 8px; height: 46px; border-radius: 13px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: var(--shadow-sm); font-size: 14px; font-weight: 600; color: var(--ink); transition: background .15s, border-color .15s; }
+.workspace .ws-new:hover { background: var(--surface-3); border-color: var(--ink-4); }
+.workspace .ws-new svg { width: 17px; height: 17px; }
+.workspace .ws-sec { font-size: 11px; font-weight: 600; color: var(--ink-4); letter-spacing: 0.02em; padding: 0 8px; margin: 26px 0 8px; }
+.workspace .ws-conv { display: block; width: 100%; text-align: left; padding: 11px 12px; border-radius: 11px; transition: background .15s; }
+.workspace .ws-conv:hover { background: var(--surface-3); }
+.workspace .ws-conv.active { background: var(--acc-soft); }
+.workspace .ws-conv .t { font-size: 13.5px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.workspace .ws-conv.active .t { color: var(--acc-ink); }
+.workspace .ws-conv .m { font-size: 11.5px; color: var(--ink-4); margin-top: 3px; }
+
+.workspace .ws-sb-foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); }
+.workspace .ws-me { display: flex; align-items: center; gap: 11px; padding: 8px; border-radius: 11px; }
+.workspace .ws-me .ava { width: 36px; height: 36px; border-radius: 10px; flex: none; background: var(--grad); display: grid; place-items: center; color: #fff; font-size: 13px; font-weight: 600; }
+.workspace .ws-me .n { font-size: 13.5px; font-weight: 600; line-height: 1.2; }
+.workspace .ws-me .d { font-size: 11.5px; color: var(--ink-4); margin-top: 1px; }
+.workspace .ws-me-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.workspace .ws-me-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-size: 12.5px; font-weight: 500; color: var(--ink-2); transition: background .15s, color .15s; }
+.workspace .ws-me-btn:hover { background: var(--surface-3); color: var(--ink); }
+.workspace .ws-me-btn svg { width: 14px; height: 14px; }
+
+/* Main */
+.workspace .ws-main { display: flex; flex-direction: column; min-width: 0; position: relative; }
+.workspace .ws-main-bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(900px 460px at 50% -8%, oklch(0.9 0.06 285 / 0.32), transparent 62%); }
+
+.workspace .ws-hdr { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; border-bottom: 1px solid var(--line); background: oklch(0.985 0.004 280 / 0.7); backdrop-filter: blur(12px); }
+.workspace .ws-hdr-brand { display: flex; align-items: center; gap: 11px; }
+.workspace .ws-hdr-brand .mark { width: 36px; height: 36px; border-radius: 10px; background: var(--grad); display: grid; place-items: center; box-shadow: 0 5px 14px -5px oklch(0.55 0.2 280 / 0.6); }
+.workspace .ws-hdr-brand .mark svg { width: 19px; height: 19px; color: #fff; }
+.workspace .ws-hdr-brand .bt { font-size: 14.5px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; white-space: nowrap; }
+.workspace .ws-hdr-brand .bs { font-size: 11.5px; color: var(--ink-4); margin-top: 1px; }
+.workspace .ws-online { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-sm); font-size: 12.5px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
+.workspace .ws-online .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px oklch(0.62 0.14 156 / 0.18); }
+
+/* Empty state */
+.workspace .ws-body { position: relative; z-index: 1; flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 28px; }
+.workspace .ws-center { width: min(760px, 100%); text-align: center; }
+.workspace .ws-bigmark { width: 72px; height: 72px; border-radius: 20px; background: var(--grad); display: grid; place-items: center; margin: 0 auto; box-shadow: 0 14px 34px -12px oklch(0.55 0.2 280 / 0.6); }
+.workspace .ws-bigmark svg { width: 38px; height: 38px; color: #fff; }
+.workspace .ws-greet { margin: 26px 0 0; font-size: clamp(34px, 4vw, 48px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.05; }
+.workspace .ws-greet .em { font-style: italic; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .04em; }
+.workspace .ws-greet .dot { color: var(--acc); }
+.workspace .ws-greet-sub { margin: 16px 0 0; font-size: 15.5px; color: var(--ink-3); }
+.workspace .ws-greet-sub b { color: var(--ink-2); font-weight: 600; }
+
+.workspace .ws-sug-lbl { display: inline-flex; align-items: center; gap: 7px; margin: 40px 0 14px; font-size: 12px; font-weight: 600; color: var(--ink-3); white-space: nowrap; }
+.workspace .ws-sug-lbl .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--acc); }
+.workspace .ws-sugs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.workspace .ws-sug { text-align: left; padding: 18px 20px; border-radius: 15px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-sm); transition: transform .12s, box-shadow .15s, border-color .15s; }
+.workspace .ws-sug:hover { transform: translateY(-2px); border-color: var(--acc-soft-2); box-shadow: var(--shadow); }
+.workspace .ws-sug .cat { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 600; color: var(--ink-4); margin-bottom: 10px; white-space: nowrap; }
+.workspace .ws-sug .cat .d { width: 6px; height: 6px; border-radius: 50%; }
+.workspace .ws-sug .q { font-size: 15px; font-weight: 500; color: var(--ink); letter-spacing: -0.015em; line-height: 1.4; }
+
+/* Composer */
+.workspace .ws-composer { position: relative; z-index: 2; padding: 16px 28px 22px; }
+.workspace .ws-composer-inner { width: min(760px, 100%); margin: 0 auto; }
+.workspace .ws-input-box { display: flex; align-items: center; gap: 12px; padding: 9px 9px 9px 20px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: var(--shadow); transition: border-color .15s, box-shadow .15s; }
+.workspace .ws-input-box:focus-within { border-color: var(--acc); box-shadow: 0 0 0 4px var(--acc-soft), var(--shadow); }
+.workspace .ws-input-box input { flex: 1; height: 44px; font-size: 15px; }
+.workspace .ws-input-box input::placeholder { color: var(--ink-4); }
+.workspace .ws-send { width: 44px; height: 44px; border-radius: 13px; flex: none; background: var(--grad); display: grid; place-items: center; box-shadow: 0 5px 14px -5px oklch(0.55 0.2 280 / 0.6); transition: transform .12s, opacity .15s; }
+.workspace .ws-send:hover { transform: translateY(-1px); }
+.workspace .ws-send svg { width: 19px; height: 19px; color: #fff; }
+.workspace .ws-composer-note { text-align: center; margin: 13px 0 0; font-size: 12px; color: var(--ink-4); display: flex; align-items: center; justify-content: center; gap: 7px; }
+.workspace .ws-composer-note svg { width: 13px; height: 13px; }
+
+/* 대화 메시지 영역 */
+.workspace .ws-msgs { display: flex; flex-direction: column; gap: 22px; width: min(760px, 100%); margin: 0 auto; padding: 24px 28px 40px; }
+.workspace .ws-msg-user {
+  align-self: flex-end; max-width: 80%;
+  background: var(--acc-soft); color: var(--acc-ink);
+  border: 1px solid var(--acc-soft-2);
+  padding: 11px 16px; border-radius: 16px 16px 4px 16px;
+  font-size: 14.5px; line-height: 1.55;
+}
+.workspace .ws-msg-ai {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 16px; box-shadow: var(--shadow-sm);
+  padding: 18px 20px;
+}
+.workspace .ws-msg-ai p { margin: 0 0 8px; font-size: 14.5px; line-height: 1.6; }
+.workspace .ws-msg-ai p:last-child { margin-bottom: 0; }
+.workspace .ws-cite-sup {
+  font-size: 0.65em; vertical-align: super; color: var(--acc);
+  margin: 0 1px; font-weight: 600; font-family: var(--mono);
+}
+.workspace .ws-mark-hl { background: var(--acc-soft); color: var(--acc-ink); padding: 0 3px; border-radius: 3px; }
+
+.workspace .ws-phase {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--ink-3);
+  padding: 6px 10px; background: var(--surface-3); border-radius: 999px;
+  font-family: var(--mono); letter-spacing: -0.01em;
+}
+
+.workspace .ws-srcs { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.workspace .ws-srcs-head { font-size: 11.5px; font-weight: 600; color: var(--ink-3); letter-spacing: -0.005em; }
+.workspace .ws-src { display: flex; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); text-decoration: none; color: inherit; transition: border-color .15s, background .15s; }
+.workspace .ws-src:hover { border-color: var(--acc-soft-2); background: var(--surface); }
+.workspace .ws-src-n { width: 22px; height: 22px; flex: none; border-radius: 6px; background: var(--acc-soft); color: var(--acc-ink); font-size: 11.5px; font-weight: 700; font-family: var(--mono); display: grid; place-items: center; }
+.workspace .ws-src-body { min-width: 0; flex: 1; }
+.workspace .ws-src-title { display: block; font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.workspace .ws-src-meta { display: block; font-size: 11px; color: var(--ink-4); font-family: var(--mono); margin-top: 2px; }
+
+.workspace .ws-followups { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.workspace .ws-followup { padding: 7px 13px; border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; font-size: 12.5px; color: var(--ink-2); transition: border-color .15s, color .15s, background .15s; }
+.workspace .ws-followup:hover:not(:disabled) { border-color: var(--acc); color: var(--acc-ink); background: var(--surface); }
+.workspace .ws-followup:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.workspace .ws-me-btn { text-decoration: none; }
+
+@media (max-width: 820px) {
+  .workspace .ws-app { grid-template-columns: 1fr; }
+  .workspace .ws-sb { display: none; }
+  .workspace .ws-sugs { grid-template-columns: 1fr; }
+}
