@@ -89,7 +89,7 @@
 .login-page .lp-divider { width: min(420px, 90vw); margin: 34px 0 6px; display: flex; align-items: center; gap: 14px; color: var(--ink-4); font-size: 11.5px; font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; }
 .login-page .lp-divider::before, .login-page .lp-divider::after { content: ""; flex: 1; height: 1px; background: repeating-linear-gradient(90deg, var(--line-2) 0 4px, transparent 4px 8px); }
 
-.login-page .lp-seeds { margin-top: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: min(560px, 92vw); }
+.login-page .lp-seeds { margin-top: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: min(760px, 94vw); }
 .login-page .lp-seed { text-align: left; padding: 15px 16px; border-radius: 13px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-sm); transition: transform .12s, box-shadow .15s, border-color .15s; }
 .login-page .lp-seed:hover { transform: translateY(-2px); border-color: var(--acc-soft-2); box-shadow: var(--shadow); }
 .login-page .lp-sn { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--ink); }
