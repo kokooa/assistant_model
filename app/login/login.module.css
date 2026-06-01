@@ -359,3 +359,48 @@
     bottom: 14px;
   }
 }
+
+/* dev 전용 시드 계정 로그인 (NODE_ENV !== 'production' 일 때만 렌더) */
+.dev {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--line-2);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.devLabel {
+  font-family: var(--font-ibm-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.devRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.devBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: oklch(1 0 0 / 0.6);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: var(--ink-2);
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+  width: 100%;
+}
+.devBtn:hover { border-color: var(--acc); color: var(--acc-ink); background: oklch(1 0 0 / 0.85); }
+.devBtnTop { font-size: 12.5px; font-weight: 500; color: var(--ink); }
+.devBtnSub { font-family: var(--font-ibm-mono), monospace; font-size: 10.5px; color: var(--ink-3); }
+
+@media (max-width: 760px) {
+  .devRow { grid-template-columns: 1fr; }
+}

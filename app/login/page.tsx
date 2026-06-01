@@ -1,6 +1,13 @@
 import { signIn } from "@/auth";
 import { I } from "@/app/_components/icons";
+import { devSignIn } from "@/app/_actions/auth";
 import styles from "./login.module.css";
+
+const DEV_USERS = [
+  { email: "kokooa@jocodingax.ai", label: "kokooa", sub: "People Ops · MEMBER" },
+  { email: "finance@jocodingax.ai", label: "finance", sub: "Finance · MEMBER" },
+  { email: "admin@jocodingax.ai", label: "admin", sub: "Engineering · ADMIN" },
+];
 
 const CHIPS = [
   { c: styles.t1, label: "출산휴가 규정" },
@@ -84,6 +91,23 @@ export default function LoginPage() {
                 </button>
               </form>
               <span className={styles.note}>사내 계정으로 로그인하면 권한 범위가 적용돼요</span>
+
+              {process.env.NODE_ENV !== "production" && (
+                <div className={styles.dev}>
+                  <div className={styles.devLabel}>개발용 로그인 (시드 계정)</div>
+                  <div className={styles.devRow}>
+                    {DEV_USERS.map((u) => (
+                      <form key={u.email} action={devSignIn}>
+                        <input type="hidden" name="email" value={u.email} />
+                        <button type="submit" className={styles.devBtn}>
+                          <span className={styles.devBtnTop}>{u.label}</span>
+                          <span className={styles.devBtnSub}>{u.sub}</span>
+                        </button>
+                      </form>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
