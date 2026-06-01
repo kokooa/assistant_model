@@ -51,8 +51,8 @@
   --r-5: 18px;
 
   /* type — next/font 변수 우선, 미로딩 시 폴백 */
-  --sans: var(--font-ibm-sans), 'Pretendard', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --mono: var(--font-ibm-mono), 'Pretendard', 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --sans: var(--font-ibm-sans), 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: var(--font-ibm-mono), 'Pretendard Variable', 'Pretendard', 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 }
 
 * { box-sizing: border-box; }
