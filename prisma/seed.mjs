@@ -1,10 +1,20 @@
 import { PrismaClient } from "@prisma/client";
 
+// 이 seed 는 dev / 로컬 검증용 데모 데이터 전용이다.
+// 운영(NODE_ENV=production)에서는 즉시 종료한다 — 부서는 관리자가 /settings/admin 에서
+// 직접 추가하고, 유저는 회사 Google 로그인 시 ensureUser 가 자동 생성한다.
+if (process.env.NODE_ENV === "production") {
+  console.log(
+    "운영 빌드라 seed 데이터를 만들지 않아요. 부서는 /settings/admin 에서, 유저는 Google 로그인 시 자동 생성돼요."
+  );
+  process.exit(0);
+}
+
 const prisma = new PrismaClient();
 
 const DEPARTMENTS = ["People Ops", "Finance", "Engineering"];
 
-// 테스트 유저 — Google 로그인 시 이메일로 매칭해 부서/역할을 부여한다.
+// 데모 유저 — dev fake login(/login 의 "개발용 로그인") 으로 들어오는 시드.
 const USERS = [
   { email: "kokooa@jocodingax.ai", name: "코쿠아", role: "MEMBER", dept: "People Ops" },
   { email: "admin@jocodingax.ai", name: "관리자", role: "ADMIN", dept: "Engineering" },
