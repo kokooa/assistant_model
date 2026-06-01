@@ -98,7 +98,8 @@
 }
 
 .login-page .lp-seeds { margin-top: 26px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: min(1180px, 95vw); }
-.login-page .lp-seed { text-align: left; padding: 30px 30px 28px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); transition: transform .12s, box-shadow .15s, border-color .15s; }
+.login-page .lp-seeds form { display: contents; }
+.login-page .lp-seed { display: block; width: 100%; text-align: left; padding: 30px 30px 28px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); transition: transform .12s, box-shadow .15s, border-color .15s; }
 .login-page .lp-seed:hover { transform: translateY(-3px); border-color: var(--acc-soft-2); box-shadow: 0 6px 12px oklch(0.4 0.02 280 / 0.06), 0 24px 50px -22px oklch(0.4 0.06 280 / 0.55); }
 .login-page .lp-sn { font-family: var(--mono); font-size: 30px; font-weight: 700; color: var(--ink); letter-spacing: -0.015em; line-height: 1.1; }
 .login-page .lp-sm { font-family: var(--mono); font-size: 15px; letter-spacing: 0.01em; color: var(--ink-4); margin-top: 18px; }
