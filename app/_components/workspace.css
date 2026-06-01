@@ -13,7 +13,7 @@
 .workspace button { border: 0; background: none; cursor: pointer; padding: 0; font: inherit; color: inherit; }
 .workspace input { border: 0; outline: none; background: none; font: inherit; color: inherit; }
 
-.workspace .ws-app { display: grid; grid-template-columns: 268px 1fr; height: 100vh; }
+.workspace .ws-app { display: grid; grid-template-columns: 268px 1fr; grid-template-rows: 100vh; height: 100vh; min-height: 0; }
 
 /* Sidebar */
 .workspace .ws-sb { background: var(--sidebar); border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 16px 14px; }
@@ -39,8 +39,13 @@
 .workspace .ws-me-btn svg { width: 14px; height: 14px; }
 
 /* Main */
-.workspace .ws-main { display: flex; flex-direction: column; min-width: 0; position: relative; }
-.workspace .ws-main-bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(900px 460px at 50% -8%, oklch(0.9 0.06 285 / 0.32), transparent 62%); }
+.workspace .ws-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; position: relative; height: 100%; }
+.workspace .ws-main-bg {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(1300px 820px at 50% 118%, oklch(0.78 0.18 285 / 0.30), transparent 58%),
+    radial-gradient(1200px 720px at 50% -18%, oklch(0.84 0.12 215 / 0.35), transparent 62%);
+}
 
 .workspace .ws-hdr { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; border-bottom: 1px solid var(--line); background: oklch(0.985 0.004 280 / 0.7); backdrop-filter: blur(12px); }
 .workspace .ws-hdr-brand { display: flex; align-items: center; gap: 11px; }
@@ -52,7 +57,7 @@
 .workspace .ws-online .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px oklch(0.62 0.14 156 / 0.18); }
 
 /* Empty state */
-.workspace .ws-body { position: relative; z-index: 1; flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 28px; }
+.workspace .ws-body { position: relative; z-index: 1; flex: 1 1 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 28px; }
 .workspace .ws-center { width: min(760px, 100%); text-align: center; }
 .workspace .ws-bigmark { width: 72px; height: 72px; border-radius: 20px; background: var(--grad); display: grid; place-items: center; margin: 0 auto; box-shadow: 0 14px 34px -12px oklch(0.55 0.2 280 / 0.6); }
 .workspace .ws-bigmark svg { width: 38px; height: 38px; color: #fff; }
