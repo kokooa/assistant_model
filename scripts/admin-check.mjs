@@ -1,5 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import { setUserRole, setUserDepartment } from "../lib/admin.ts";
+import {
+  setUserRole,
+  setUserDepartment,
+  createDepartment,
+  deleteDepartment,
+} from "../lib/admin.ts";
 
 // lib/admin.ts 검증: seed 유저 한 명의 role/department 를 잠시 바꿔서 반영 확인 후 원복.
 // dev server / 로그인 없이 server action 핵심 로직만 직접 호출.
@@ -65,6 +70,22 @@ async function main() {
   await expectThrows("존재하지 않는 부서 id 는 throw", () =>
     setUserDepartment(user.id, "nonexistent_dept_id_xxxxx")
   );
+
+  console.log("\n── createDepartment / deleteDepartment ──");
+  const TMP_DEPT = "TMP_부서_검증용";
+  await prisma.department.deleteMany({ where: { name: TMP_DEPT } });
+  const d = await createDepartment(TMP_DEPT);
+  const back = await prisma.department.findUnique({ where: { id: d.id } });
+  await expect("부서 생성", back?.name, TMP_DEPT);
+  await expectThrows("빈 이름은 throw", () => createDepartment("   "));
+  await expectThrows("중복 이름은 throw", () => createDepartment(TMP_DEPT));
+  // 멤버 1명을 임시로 옮겨두고 삭제 시도 → 차단되어야 함
+  await prisma.user.update({ where: { id: user.id }, data: { departmentId: d.id } });
+  await expectThrows("소속 멤버가 있으면 삭제 throw", () => deleteDepartment(d.id));
+  await prisma.user.update({ where: { id: user.id }, data: { departmentId: originalDeptId } });
+  await deleteDepartment(d.id);
+  const gone = await prisma.department.findUnique({ where: { id: d.id } });
+  await expect("멤버 0명이면 삭제 성공", gone, null);
 
   console.log(failed === 0 ? "\n전부 통과 ✅" : `\n실패 ${failed}건 ❌`);
   process.exitCode = failed === 0 ? 0 : 1;

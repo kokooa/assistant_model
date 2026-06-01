@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { I } from "@/app/_components/icons";
+import { createDepartmentAction, deleteDepartmentAction } from "@/app/_actions/admin";
 import { RoleSelect } from "./RoleSelect";
 import { DepartmentSelect } from "./DepartmentSelect";
 
@@ -10,7 +11,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const USERS_COLS = "minmax(0,1fr) 160px 130px";
-const DEPTS_COLS = "minmax(0,1fr) 90px";
+const DEPTS_COLS = "minmax(0,1fr) 80px 60px";
 
 export default async function AdminPage() {
   const session = await auth();
@@ -63,15 +64,37 @@ export default async function AdminPage() {
 
         <section className="set-card">
           <div className="set-label">부서 ({depts.length})</div>
+
+          <form action={createDepartmentAction} className="set-tbl-form">
+            <input
+              type="text"
+              name="name"
+              required
+              placeholder="새 부서 이름"
+              className="set-tbl-input"
+            />
+            <button type="submit" className="set-tbl-btn">추가</button>
+          </form>
+
           <div className="set-tbl">
             <div className="set-tbl-row set-tbl-head" style={{ gridTemplateColumns: DEPTS_COLS }}>
               <span>이름</span>
               <span>멤버</span>
+              <span></span>
             </div>
+            {depts.length === 0 && <div className="set-empty">아직 부서가 없어요. 위에서 추가해 주세요.</div>}
             {depts.map((d) => (
               <div key={d.id} className="set-tbl-row" style={{ gridTemplateColumns: DEPTS_COLS }}>
                 <span className="set-tbl-name">{d.name}</span>
                 <span className="set-tbl-cell">{d._count.users}명</span>
+                {d._count.users === 0 ? (
+                  <form action={deleteDepartmentAction}>
+                    <input type="hidden" name="departmentId" value={d.id} />
+                    <button type="submit" className="set-tbl-btn-danger" aria-label={`${d.name} 삭제`}>삭제</button>
+                  </form>
+                ) : (
+                  <span className="set-tbl-cell" aria-hidden>—</span>
+                )}
               </div>
             ))}
           </div>

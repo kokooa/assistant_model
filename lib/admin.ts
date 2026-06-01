@@ -22,3 +22,17 @@ export async function setUserDepartment(userId: string, departmentId: string | n
   }
   await prisma.user.update({ where: { id: userId }, data: { departmentId } });
 }
+
+export async function createDepartment(name: string) {
+  const n = name.trim();
+  if (!n) throw new Error("부서 이름이 비어 있어요");
+  const exists = await prisma.department.findUnique({ where: { name: n } });
+  if (exists) throw new Error("이미 같은 이름의 부서가 있어요");
+  return prisma.department.create({ data: { name: n } });
+}
+
+export async function deleteDepartment(departmentId: string) {
+  const members = await prisma.user.count({ where: { departmentId } });
+  if (members > 0) throw new Error(`소속 멤버 ${members}명 — 먼저 이동시켜야 삭제할 수 있어요`);
+  await prisma.department.delete({ where: { id: departmentId } });
+}
