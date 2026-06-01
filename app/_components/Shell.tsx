@@ -22,7 +22,7 @@ export function Shell({ children }: { children: ReactNode }) {
   }, []);
 
   // 물어보기(홈)·설정은 사이드바·전역 헤더 없이 풀폭 독립 화면.
-  if (pathname === "/" || pathname === "/settings") {
+  if (pathname === "/" || pathname.startsWith("/settings")) {
     return (
       <>
         {children}

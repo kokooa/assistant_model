@@ -57,6 +57,16 @@ export default async function SettingsPage() {
           )}
         </section>
 
+        {user?.role === "ADMIN" && (
+          <Link className="set-card set-link-card" href="/settings/admin">
+            <div className="set-label">관리</div>
+            <div className="set-row">
+              <span className="set-row-k">유저 · 부서</span>
+              <span className="set-row-v">→</span>
+            </div>
+          </Link>
+        )}
+
         <form action={logout}>
           <button type="submit" className="set-logout">{I.lock({ size: 15 })} 로그아웃</button>
         </form>

@@ -2101,3 +2101,40 @@ a { color: inherit; text-decoration: none; }
   transition: border-color 0.14s, color 0.14s, background 0.14s;
 }
 .set-logout:hover { border-color: oklch(0.72 0.15 25); color: oklch(0.52 0.2 25); background: var(--surface-2); }
+
+/* 설정 > 관리 화면용 — 같은 set-card 안의 표/링크 */
+.set-link-card { display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+.set-link-card:hover { border-color: var(--line-strong); background: var(--surface-2); }
+
+.set-tbl { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.set-tbl-row {
+  display: grid;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink);
+}
+.set-tbl-row:last-child { border-bottom: none; }
+.set-tbl-head {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 8px 0;
+}
+.set-tbl-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.set-tbl-sub { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+.set-tbl-cell { color: var(--ink-2); }
+.set-tbl-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: 11.5px;
+  color: var(--ink-2);
+}
