@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { updateUserDepartmentAction } from "@/app/_actions/admin";
 
 interface DeptOption { id: string; name: string }
 
+// form action 에 server action 을 직접 prop 으로 — Next 가 FormData 를 자동 전달한다.
+// select 는 uncontrolled(defaultValue) + key={value} 로 prop 변화 시 instance 가 새로
+// mount 되어 stale 표시값을 차단. useTransition wrapper 와 controlled state 를 끼우면
+// 같은 row 에서 빠른 두 번 변경 시 stale 사용자 선택값으로 submit 되는 경우가 있어 제거.
 export function DepartmentSelect({
   userId,
   value,
@@ -15,36 +17,15 @@ export function DepartmentSelect({
   value: string | null;
   options: DeptOption[];
 }) {
-  const router = useRouter();
-  const formRef = useRef<HTMLFormElement>(null);
-  const [pending, start] = useTransition();
-  const [val, setVal] = useState(value ?? "");
-  useEffect(() => { setVal(value ?? ""); }, [value]);
-
   return (
-    <form
-      ref={formRef}
-      action={(fd) =>
-        start(async () => {
-          await updateUserDepartmentAction(fd);
-          // revalidatePath 만으로는 같은 페이지에 머무는 client 의 RSC tree 가
-          // 일관되게 새로고침되지 않는 케이스가 있어서 명시 호출.
-          router.refresh();
-        })
-      }
-    >
+    <form action={updateUserDepartmentAction}>
       <input type="hidden" name="userId" value={userId} />
       <select
-        // value prop 변화 시 instance 자체를 새로 만들어 stale 표시값을 차단.
         key={value ?? "_"}
         name="departmentId"
-        value={val}
-        disabled={pending}
+        defaultValue={value ?? ""}
         className="set-tbl-select"
-        onChange={(e) => {
-          setVal(e.target.value);
-          formRef.current?.requestSubmit();
-        }}
+        onChange={(e) => e.currentTarget.form?.requestSubmit()}
       >
         <option value="">—</option>
         {options.map((d) => (
