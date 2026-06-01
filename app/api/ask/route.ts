@@ -1,4 +1,4 @@
-import { search } from "@/lib/rag";
+import { retrieve } from "@/lib/retrieve";
 import { getUserContext } from "@/lib/session";
 import { streamGroundedAnswer } from "@/lib/llm";
 
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   const question = typeof q === "string" ? q.trim() : "";
   if (!question) return new Response("missing q", { status: 400 });
 
-  const hits = await search(question, user, 6);
+  const hits = await retrieve(question, user, 6);
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({

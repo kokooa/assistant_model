@@ -1,4 +1,4 @@
-import { search } from "@/lib/rag";
+import { retrieve } from "@/lib/retrieve";
 import { getUserContext } from "@/lib/session";
 
 export const runtime = "nodejs";
@@ -9,6 +9,6 @@ export async function GET(req: Request) {
   if (!user) return new Response("unauthorized", { status: 401 });
   const q = new URL(req.url).searchParams.get("q")?.trim() ?? "";
   if (!q) return Response.json({ hits: [] });
-  const hits = await search(q, user, 6);
+  const hits = await retrieve(q, user, 6);
   return Response.json({ hits });
 }

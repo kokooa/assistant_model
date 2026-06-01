@@ -45,7 +45,8 @@ export interface SearchHit {
   type: string;
   path: string;
   heading: string;
-  snippet: string;
+  snippet: string;        // UI 표시용 짧은 미리보기
+  content?: string;       // LLM 근거용 전체 청크 본문
   score: number;
   locked: boolean;
 }
@@ -186,6 +187,7 @@ export async function search(
       path: c.doc.path,
       heading: c.heading,
       snippet: c.text.replace(/\s+/g, " ").slice(0, 140),
+      content: c.text,
       score: Math.round(score * 1000) / 1000,
       locked: c.doc.scope !== "GLOBAL",
     }));
