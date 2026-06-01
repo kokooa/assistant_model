@@ -1,0 +1,43 @@
+/* =========================================================================
+   디자인 토큰 — 4개 화면(로그인·작업창·설정·관리) 공용
+   --------------------------------------------------------------------------
+   전역에서 한 번 import 하면 모든 화면이 같은 색·라운드·그림자를 공유합니다.
+   각 화면 CSS 는 이 변수들을 그대로 참조하도록 작성돼 있습니다.
+   Pretendard 는 프로젝트에 이미 적용돼 있다고 가정합니다.
+   ========================================================================= */
+:root {
+  --bg: oklch(0.985 0.004 280);
+  --surface: #ffffff;
+  --surface-2: oklch(0.978 0.004 280);
+  --surface-3: oklch(0.967 0.005 280);
+  --sidebar: oklch(0.982 0.004 280);
+
+  --ink: oklch(0.235 0.02 280);
+  --ink-2: oklch(0.43 0.018 280);
+  --ink-3: oklch(0.57 0.014 280);
+  --ink-4: oklch(0.70 0.01 280);
+
+  --line: oklch(0.925 0.006 280);
+  --line-2: oklch(0.88 0.008 280);
+
+  --acc: oklch(0.55 0.2 278);
+  --acc-2: oklch(0.52 0.21 294);
+  --acc-soft: oklch(0.965 0.028 282);
+  --acc-soft-2: oklch(0.93 0.05 284);
+  --acc-ink: oklch(0.44 0.19 285);
+  --grad: linear-gradient(142deg, oklch(0.63 0.19 266), oklch(0.54 0.22 298));
+  --ok: oklch(0.62 0.14 156);
+
+  --sans: 'Pretendard', system-ui, -apple-system, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+  --r: 16px;
+  --shadow-sm: 0 1px 2px oklch(0.4 0.02 280 / 0.05);
+  --shadow: 0 2px 4px oklch(0.4 0.02 280 / 0.05), 0 16px 36px -24px oklch(0.4 0.04 280 / 0.5);
+
+  /* 카테고리 색 (작업창 추천 질문 점 등) */
+  --cat-attend: oklch(0.55 0.2 278);
+  --cat-expense: oklch(0.62 0.15 200);
+  --cat-it: oklch(0.68 0.14 60);
+  --cat-welfare: oklch(0.66 0.15 145);
+}
