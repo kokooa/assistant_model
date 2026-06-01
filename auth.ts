@@ -3,6 +3,7 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import type { Role } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { ensureUser } from "@/lib/auth";
 
 // Google OAuth (axhub 규약: GOOGLE_CLIENT_ID/SECRET 을 env 로 읽음 — 배포 시 axhub 가
 // 회사 관리 자격증명을 주입). 회사 도메인(jocodingax.ai)만 허용. 부서/역할은 DB User 에서.
@@ -49,13 +50,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async jwt({ token }) {
       if (token.email && token.role === undefined) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: token.email },
-          include: { department: true },
-        });
-        token.role = dbUser?.role ?? "MEMBER";
-        token.department = dbUser?.department?.name ?? null;
-        if (dbUser?.name) token.name = dbUser.name;
+        // 회사 도메인 로그인 시 자동 upsert. ADMIN_EMAILS 에 있는 이메일만 부트스트랩 ADMIN.
+        const dbUser = await ensureUser(token.email, token.name);
+        token.role = dbUser.role;
+        token.department = dbUser.department?.name ?? null;
+        if (dbUser.name) token.name = dbUser.name;
       }
       return token;
     },
