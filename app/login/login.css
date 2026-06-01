@@ -97,13 +97,13 @@
   background: repeating-linear-gradient(90deg, var(--line-2) 0 5px, transparent 5px 11px);
 }
 
-.login-page .lp-seeds { margin-top: 26px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: min(1180px, 95vw); }
+.login-page .lp-seeds { margin-top: 22px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: min(590px, 92vw); }
 .login-page .lp-seeds form { display: contents; }
-.login-page .lp-seed { display: block; width: 100%; text-align: left; padding: 30px 30px 28px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); transition: transform .12s, box-shadow .15s, border-color .15s; }
-.login-page .lp-seed:hover { transform: translateY(-3px); border-color: var(--acc-soft-2); box-shadow: 0 6px 12px oklch(0.4 0.02 280 / 0.06), 0 24px 50px -22px oklch(0.4 0.06 280 / 0.55); }
-.login-page .lp-sn { font-family: var(--mono); font-size: 30px; font-weight: 700; color: var(--ink); letter-spacing: -0.015em; line-height: 1.1; }
-.login-page .lp-sm { font-family: var(--mono); font-size: 15px; letter-spacing: 0.01em; color: var(--ink-4); margin-top: 18px; }
-.login-page .lp-badge { display: inline-block; margin-top: 24px; padding: 6px 14px; border-radius: 9px; font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; }
+.login-page .lp-seed { display: block; width: 100%; text-align: left; padding: 15px 15px 14px; border-radius: 11px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-sm); transition: transform .12s, box-shadow .15s, border-color .15s; }
+.login-page .lp-seed:hover { transform: translateY(-2px); border-color: var(--acc-soft-2); box-shadow: var(--shadow); }
+.login-page .lp-sn { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; line-height: 1.1; }
+.login-page .lp-sm { font-family: var(--mono); font-size: 11px; letter-spacing: 0.01em; color: var(--ink-4); margin-top: 9px; }
+.login-page .lp-badge { display: inline-block; margin-top: 12px; padding: 3px 8px; border-radius: 6px; font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.06em; }
 .login-page .lp-badge.admin { color: var(--acc-ink); background: var(--acc-soft); border: 1px solid var(--acc-soft-2); }
 .login-page .lp-badge.mem { color: var(--ink-3); background: var(--surface-3); border: 1px solid var(--line); }
 
