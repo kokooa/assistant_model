@@ -17,12 +17,10 @@
 .login-page .lp-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 .login-page .lp-glow {
   position: absolute; inset: 0;
-  /* 위 = 푸른색, 아래 = 라벤더, 양옆 = 라벤더, 중앙 = 흰색 유지 */
+  /* 위 = 푸른색, 아래 = 라벤더만. 양옆은 흰색 유지. */
   background:
     radial-gradient(1300px 820px at 50% 118%, oklch(0.78 0.18 285 / 0.60), transparent 58%),
-    radial-gradient(1200px 720px at 50% -18%, oklch(0.84 0.12 215 / 0.65), transparent 62%),
-    radial-gradient(800px 1000px at -8% 50%, oklch(0.86 0.10 290 / 0.40), transparent 60%),
-    radial-gradient(800px 1000px at 108% 50%, oklch(0.86 0.10 290 / 0.40), transparent 60%);
+    radial-gradient(1200px 720px at 50% -18%, oklch(0.84 0.12 215 / 0.65), transparent 62%);
 }
 .login-page .lp-grid {
   position: absolute; inset: 0;
@@ -89,15 +87,22 @@
 .login-page .lp-gbtn svg { width: 20px; height: 20px; }
 .login-page .lp-hint { margin-top: 14px; font-size: 13px; color: var(--ink-4); }
 
-.login-page .lp-divider { width: min(1180px, 95vw); margin: 40px 0 10px; display: flex; align-items: center; gap: 18px; color: var(--ink-4); font-size: 12.5px; font-family: var(--mono); letter-spacing: 0.05em; }
-.login-page .lp-divider::before, .login-page .lp-divider::after { content: ""; flex: 1; height: 1px; background: repeating-linear-gradient(90deg, var(--line-2) 0 4px, transparent 4px 8px); }
+.login-page .lp-divider {
+  width: min(1180px, 95vw); margin: 46px 0 14px;
+  display: flex; align-items: center; gap: 20px;
+  color: var(--ink-3); font-size: 14.5px; letter-spacing: -0.01em;
+}
+.login-page .lp-divider::before, .login-page .lp-divider::after {
+  content: ""; flex: 1; height: 1px;
+  background: repeating-linear-gradient(90deg, var(--line-2) 0 5px, transparent 5px 11px);
+}
 
-.login-page .lp-seeds { margin-top: 22px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; width: min(1180px, 95vw); }
-.login-page .lp-seed { text-align: left; padding: 24px 26px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); transition: transform .12s, box-shadow .15s, border-color .15s; }
+.login-page .lp-seeds { margin-top: 26px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; width: min(1180px, 95vw); }
+.login-page .lp-seed { text-align: left; padding: 30px 30px 28px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); transition: transform .12s, box-shadow .15s, border-color .15s; }
 .login-page .lp-seed:hover { transform: translateY(-3px); border-color: var(--acc-soft-2); box-shadow: 0 6px 12px oklch(0.4 0.02 280 / 0.06), 0 24px 50px -22px oklch(0.4 0.06 280 / 0.55); }
-.login-page .lp-sn { font-family: var(--mono); font-size: 19px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
-.login-page .lp-sm { font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.02em; color: var(--ink-4); margin-top: 10px; }
-.login-page .lp-badge { display: inline-block; margin-top: 16px; padding: 5px 12px; border-radius: 8px; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; }
+.login-page .lp-sn { font-family: var(--mono); font-size: 30px; font-weight: 700; color: var(--ink); letter-spacing: -0.015em; line-height: 1.1; }
+.login-page .lp-sm { font-family: var(--mono); font-size: 15px; letter-spacing: 0.01em; color: var(--ink-4); margin-top: 18px; }
+.login-page .lp-badge { display: inline-block; margin-top: 24px; padding: 6px 14px; border-radius: 9px; font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; }
 .login-page .lp-badge.admin { color: var(--acc-ink); background: var(--acc-soft); border: 1px solid var(--acc-soft-2); }
 .login-page .lp-badge.mem { color: var(--ink-3); background: var(--surface-3); border: 1px solid var(--line); }
 
