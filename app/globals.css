@@ -2194,3 +2194,24 @@ a { color: inherit; text-decoration: none; }
   transition: border-color 0.12s, color 0.12s, background 0.12s;
 }
 .set-tbl-btn-danger:hover { border-color: oklch(0.72 0.15 25); color: oklch(0.52 0.2 25); background: var(--surface-2); }
+
+/* Notion 동기화 카드 */
+.set-sync-dist { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
+.set-sync-dist li { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); }
+.set-sync-n { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); }
+.set-sync-form { display: flex; flex-direction: column; gap: 11px; }
+.set-sync-row { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.set-sync-field { display: flex; flex-direction: column; gap: 4px; }
+.set-sync-k {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.set-sync-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.set-sync-msg { font-size: 12.5px; color: var(--ink-3); }
+
+@media (max-width: 760px) {
+  .set-sync-row { grid-template-columns: 1fr; }
+}

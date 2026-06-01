@@ -6,6 +6,7 @@ import { I } from "@/app/_components/icons";
 import { createDepartmentAction, deleteDepartmentAction } from "@/app/_actions/admin";
 import { RoleSelect } from "./RoleSelect";
 import { DepartmentSelect } from "./DepartmentSelect";
+import { SyncControl } from "./SyncControl";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,7 +18,7 @@ export default async function AdminPage() {
   const session = await auth();
   if (session?.user?.role !== "ADMIN") notFound();
 
-  const [users, depts] = await Promise.all([
+  const [users, depts, chunkRows] = await Promise.all([
     prisma.user.findMany({
       include: { department: true },
       orderBy: [{ role: "asc" }, { name: "asc" }],
@@ -26,7 +27,12 @@ export default async function AdminPage() {
       include: { _count: { select: { users: true } } },
       orderBy: { name: "asc" },
     }),
+    prisma.$queryRawUnsafe<{ scope: string; department: string | null; n: bigint }[]>(
+      "SELECT scope, department, count(*)::bigint AS n FROM chunks GROUP BY scope, department ORDER BY scope, department"
+    ),
   ]);
+  const totalChunks = chunkRows.reduce((s, r) => s + Number(r.n), 0);
+  const defaultRoot = process.env.NOTION_ROOT_PAGE_ID ?? "";
 
   return (
     <div className="set">
@@ -40,6 +46,23 @@ export default async function AdminPage() {
 
       <main className="set-main">
         <h1 className="set-title">관리</h1>
+
+        <section className="set-card">
+          <div className="set-label">Notion 동기화 · 색인 {totalChunks} chunks</div>
+          {chunkRows.length > 0 && (
+            <ul className="set-sync-dist">
+              {chunkRows.map((r, i) => (
+                <li key={i}>
+                  <span className="set-tbl-tag">
+                    {r.scope}{r.department ? ` · ${r.department}` : ""}
+                  </span>
+                  <span className="set-sync-n">{Number(r.n)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <SyncControl depts={depts.map((d) => ({ id: d.id, name: d.name }))} defaultRoot={defaultRoot} />
+        </section>
 
         <section className="set-card">
           <div className="set-label">유저 ({users.length})</div>
