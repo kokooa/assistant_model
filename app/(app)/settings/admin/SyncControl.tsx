@@ -98,7 +98,7 @@ export function SyncControl({
           <Refresh /> {pending ? "시작 중…" : "동기화 실행"}
         </button>
         <span className="ac-last">
-          마지막 동기화 <b>{lastSyncLabel}</b> · {totalChunks} 조각
+          마지막 동기화 <b>{lastSyncLabel}</b> · {totalChunks} 하위문서
         </span>
         {msg && <span className="ac-last" style={{ color: "var(--ac-ink-3)" }}>{msg}</span>}
       </div>
