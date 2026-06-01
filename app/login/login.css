@@ -88,7 +88,7 @@
 .login-page .lp-hint { margin-top: 14px; font-size: 13px; color: var(--ink-4); }
 
 .login-page .lp-divider {
-  width: min(1180px, 95vw); margin: 46px 0 14px;
+  width: min(1180px, 40vw); margin: 46px 0 14px;
   display: flex; align-items: center; gap: 20px;
   color: var(--ink-3); font-size: 14.5px; letter-spacing: -0.01em;
 }
@@ -97,7 +97,7 @@
   background: repeating-linear-gradient(90deg, var(--line-2) 0 5px, transparent 5px 11px);
 }
 
-.login-page .lp-seeds { margin-top: 26px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; width: min(1180px, 95vw); }
+.login-page .lp-seeds { margin-top: 26px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: min(1180px, 95vw); }
 .login-page .lp-seed { text-align: left; padding: 30px 30px 28px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); transition: transform .12s, box-shadow .15s, border-color .15s; }
 .login-page .lp-seed:hover { transform: translateY(-3px); border-color: var(--acc-soft-2); box-shadow: 0 6px 12px oklch(0.4 0.02 280 / 0.06), 0 24px 50px -22px oklch(0.4 0.06 280 / 0.55); }
 .login-page .lp-sn { font-family: var(--mono); font-size: 30px; font-weight: 700; color: var(--ink); letter-spacing: -0.015em; line-height: 1.1; }
