@@ -5,7 +5,7 @@
   "description": "사내 지식 AI 어시스턴트 — 직원이 사내 정보를 자연어로 물어보면 근거와 함께 답해요",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint ."
   },

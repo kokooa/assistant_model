@@ -1,7 +1,6 @@
 "use server";
 
 import { spawn } from "node:child_process";
-import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import {
@@ -75,13 +74,16 @@ export async function syncNotionAction(formData: FormData) {
     throw new Error("DEPARTMENT scope 일 때는 부서명을 골라야 해요");
   }
 
-  const script = path.join(process.cwd(), "scripts", "sync-notion.mjs");
-  const args: string[] = [script];
+  // string concat — Turbopack 의 정적 module resolution 이 path.join 결과를
+  // module path 로 잘못 추론하는 문제를 회피.
+  const cwd = process.cwd();
+  const scriptPath = cwd + "/scripts/sync-notion.mjs";
+  const args: string[] = [scriptPath];
   if (scope === "DEPARTMENT") args.push("--scope", "DEPARTMENT", "--department", department);
   if (rootPageId) args.push("--root", rootPageId);
 
   const child = spawn("node", args, {
-    cwd: process.cwd(),
+    cwd,
     env: process.env,
     detached: true,
     stdio: "ignore",
