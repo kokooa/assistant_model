@@ -18,7 +18,7 @@ export default async function AdminPage() {
   const session = await auth();
   if (session?.user?.role !== "ADMIN") notFound();
 
-  const [users, depts, chunkRows] = await Promise.all([
+  const [users, depts, chunkRows, docCountRows] = await Promise.all([
     prisma.user.findMany({
       include: { department: true },
       orderBy: [{ role: "asc" }, { name: "asc" }],
@@ -30,8 +30,12 @@ export default async function AdminPage() {
     prisma.$queryRawUnsafe<{ scope: string; department: string | null; n: bigint }[]>(
       "SELECT scope, department, count(*)::bigint AS n FROM chunks GROUP BY scope, department ORDER BY scope, department"
     ),
+    prisma.$queryRawUnsafe<{ n: bigint }[]>(
+      "SELECT count(DISTINCT doc_id)::bigint AS n FROM chunks"
+    ),
   ]);
   const totalChunks = chunkRows.reduce((s, r) => s + Number(r.n), 0);
+  const totalDocs = Number(docCountRows[0]?.n ?? 0);
   const defaultRoot = process.env.NOTION_ROOT_PAGE_ID ?? "";
 
   return (
@@ -50,16 +54,17 @@ export default async function AdminPage() {
         {/* KPI 카드 — 한눈에 보이는 숫자 3개 */}
         <section className="set-kpis">
           <div className="set-kpi">
-            <span className="set-label">유저</span>
+            <span className="set-kpi-label">유저</span>
             <span className="set-kpi-n">{users.length}</span>
           </div>
           <div className="set-kpi">
-            <span className="set-label">부서</span>
+            <span className="set-kpi-label">부서</span>
             <span className="set-kpi-n">{depts.length}</span>
           </div>
           <div className="set-kpi">
-            <span className="set-label">색인 chunks</span>
-            <span className="set-kpi-n">{totalChunks}</span>
+            <span className="set-kpi-label">문서 종류</span>
+            <span className="set-kpi-n">{totalDocs}</span>
+            <span className="set-kpi-sub">{totalChunks} 조각으로 색인</span>
           </div>
         </section>
 
