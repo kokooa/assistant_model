@@ -12,17 +12,19 @@ export function RoleSelect({ userId, value }: { userId: string; value: string })
   return (
     <form action={updateUserRoleAction}>
       <input type="hidden" name="userId" value={userId} />
-      <select
-        key={value}
-        name="role"
-        defaultValue={value}
-        className="set-tbl-select"
-        onChange={(e) => e.currentTarget.form?.requestSubmit()}
-      >
-        {ROLES.map((r) => (
-          <option key={r.value} value={r.value}>{r.label}</option>
-        ))}
-      </select>
+      <div className="ac-sel-wrap">
+        <select
+          key={value}
+          name="role"
+          defaultValue={value}
+          className={"ac-sel" + (value === "ADMIN" ? " is-admin" : "")}
+          onChange={(e) => e.currentTarget.form?.requestSubmit()}
+        >
+          {ROLES.map((r) => (
+            <option key={r.value} value={r.value}>{r.label}</option>
+          ))}
+        </select>
+      </div>
     </form>
   );
 }
