@@ -19,8 +19,8 @@
   position: absolute; inset: 0;
   /* 위 = 푸른색, 아래 = 라벤더만. 양옆은 흰색 유지. */
   background:
-    radial-gradient(1300px 820px at 50% 118%, oklch(0.78 0.18 285 / 0.60), transparent 58%),
-    radial-gradient(1200px 720px at 50% -18%, oklch(0.84 0.12 215 / 0.65), transparent 62%);
+    radial-gradient(1300px 820px at 50% 118%, oklch(0.78 0.18 285 / 0.45), transparent 58%),
+    radial-gradient(1200px 720px at 50% -18%, oklch(0.84 0.12 215 / 0.50), transparent 62%);
 }
 .login-page .lp-grid {
   position: absolute; inset: 0;
