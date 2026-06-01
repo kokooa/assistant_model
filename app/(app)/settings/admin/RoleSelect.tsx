@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { updateUserRoleAction } from "@/app/_actions/admin";
 
 const ROLES = [
@@ -10,15 +11,25 @@ const ROLES = [
 ];
 
 export function RoleSelect({ userId, value }: { userId: string; value: string }) {
+  const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [pending, start] = useTransition();
   const [val, setVal] = useState(value);
   useEffect(() => { setVal(value); }, [value]);
 
   return (
-    <form ref={formRef} action={(fd) => start(() => updateUserRoleAction(fd))}>
+    <form
+      ref={formRef}
+      action={(fd) =>
+        start(async () => {
+          await updateUserRoleAction(fd);
+          router.refresh();
+        })
+      }
+    >
       <input type="hidden" name="userId" value={userId} />
       <select
+        key={value}
         name="role"
         value={val}
         disabled={pending}
