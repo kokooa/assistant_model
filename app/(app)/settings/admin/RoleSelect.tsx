@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { updateUserRoleAction } from "@/app/_actions/admin";
 
 const ROLES = [
@@ -12,15 +12,21 @@ const ROLES = [
 export function RoleSelect({ userId, value }: { userId: string; value: string }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [pending, start] = useTransition();
+  const [val, setVal] = useState(value);
+  useEffect(() => { setVal(value); }, [value]);
+
   return (
     <form ref={formRef} action={(fd) => start(() => updateUserRoleAction(fd))}>
       <input type="hidden" name="userId" value={userId} />
       <select
         name="role"
-        defaultValue={value}
+        value={val}
         disabled={pending}
         className="set-tbl-select"
-        onChange={() => formRef.current?.requestSubmit()}
+        onChange={(e) => {
+          setVal(e.target.value);
+          formRef.current?.requestSubmit();
+        }}
       >
         {ROLES.map((r) => (
           <option key={r.value} value={r.value}>{r.label}</option>
