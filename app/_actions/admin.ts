@@ -51,6 +51,17 @@ export async function deleteDepartmentAction(formData: FormData) {
 
 // Notion 트리 → pgvector 색인 동기화. 분 단위 작업이라 spawn 으로 background fire-and-forget.
 // 진행 로그는 서버 콘솔(axhub log) 에서 확인.
+export async function batchUpdateUsersAction(formData: FormData) {
+  await requireAdmin();
+  const raw = String(formData.get("changes") ?? "[]");
+  const changes = JSON.parse(raw) as { id: string; role?: string; departmentId?: string | null }[];
+  for (const c of changes) {
+    if (typeof c.role === "string") await setUserRole(c.id, c.role);
+    if (c.departmentId !== undefined) await setUserDepartment(c.id, c.departmentId || null);
+  }
+  revalidatePath("/settings/admin");
+}
+
 export async function syncNotionAction(formData: FormData) {
   await requireAdmin();
   const scope = String(formData.get("scope") ?? "GLOBAL").toUpperCase();

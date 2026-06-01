@@ -289,6 +289,28 @@
 .admin-console .ac-last { font-size: 12px; color: var(--ac-ink-4); font-family: var(--ac-mono); }
 .admin-console .ac-last b { color: var(--ac-ok); font-weight: 600; }
 
+/* User list — 저장 패턴 */
+.admin-console .ac-userlist-actions { display: inline-flex; align-items: center; gap: 12px; }
+.admin-console .ac-btn-link {
+  font-size: 12.5px; font-weight: 500; color: var(--ac-ink-3);
+  padding: 6px 8px; border-radius: 7px;
+  transition: background .15s, color .15s;
+}
+.admin-console .ac-btn-link:hover { background: var(--ac-surface-3); color: var(--ac-ink); }
+.admin-console .ac-btn-sm { height: 34px; padding: 0 16px; font-size: 13px; border-radius: 9px; }
+.admin-console .ac-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+.admin-console .ac-userlist-msg {
+  margin: -2px 0 14px; padding: 9px 12px;
+  background: var(--ac-acc-soft); color: var(--ac-acc-ink);
+  border: 1px solid var(--ac-acc-soft-2); border-radius: 10px;
+  font-size: 12.5px; font-weight: 500;
+}
+.admin-console .ac-urow.is-dirty { background: oklch(0.985 0.022 282); border-radius: 10px; padding-left: 8px; padding-right: 8px; }
+.admin-console .ac-urow.is-dirty .ac-uname::after {
+  content: " ● 변경됨"; margin-left: 6px;
+  font-size: 10.5px; font-weight: 600; color: var(--ac-acc); letter-spacing: -0.005em;
+}
+
 @media (max-width: 900px) {
   .admin-console .ac-stats { grid-template-columns: 1fr; }
   .admin-console .ac-grid { grid-template-columns: 1fr; }

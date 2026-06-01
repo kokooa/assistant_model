@@ -3,9 +3,8 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { createDepartmentAction, deleteDepartmentAction } from "@/app/_actions/admin";
-import { RoleSelect } from "./RoleSelect";
-import { DepartmentSelect } from "./DepartmentSelect";
 import { SyncControl } from "./SyncControl";
+import { UserList } from "./UserList";
 import "./admin.css";
 
 export const runtime = "nodejs";
@@ -150,7 +149,7 @@ export default async function AdminPage() {
               <span className="ac-lbl">문서 종류</span>
             </span>
             <div className="ac-num">{totalDocs}</div>
-            <div className="ac-sub">{totalChunks} 조각으로 색인</div>
+            <div className="ac-sub">{totalChunks} 하위문서</div>
           </div>
         </section>
 
@@ -218,31 +217,17 @@ export default async function AdminPage() {
             </section>
           </div>
 
-          {/* 유저 */}
-          <section className="ac-card">
-            <div className="ac-card-head">
-              <div className="ac-title"><span className="ac-ic"><Ico.users /></span>유저</div>
-              <span className="ac-lbl">총 {users.length}명</span>
-            </div>
-            <div className="ac-card-body">
-              <div className="ac-uhead"><span>이름 / 이메일</span><span>부서</span><span>역할</span></div>
-              {users.map((u, i) => (
-                <div className="ac-urow" key={u.id}>
-                  <div className="ac-uperson">
-                    <div className="ac-uava" style={{ background: AVATAR_GRADS[i % AVATAR_GRADS.length] }}>
-                      {(u.name ?? u.email).trim().charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <div className="ac-uname">{u.name}</div>
-                      <div className="ac-umail">{u.email}</div>
-                    </div>
-                  </div>
-                  <DepartmentSelect userId={u.id} value={u.departmentId} options={deptOptions} />
-                  <RoleSelect userId={u.id} value={u.role} />
-                </div>
-              ))}
-            </div>
-          </section>
+          <UserList
+            users={users.map((u, i) => ({
+              id: u.id,
+              name: u.name,
+              email: u.email,
+              departmentId: u.departmentId,
+              role: u.role,
+              avatarGrad: AVATAR_GRADS[i % AVATAR_GRADS.length],
+            }))}
+            depts={deptOptions}
+          />
         </div>
       </main>
     </div>
