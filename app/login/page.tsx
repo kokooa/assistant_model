@@ -1,4 +1,5 @@
 import { signIn } from "@/auth";
+import { I } from "@/app/_components/icons";
 import styles from "./login.module.css";
 
 const CHIPS = [
@@ -50,9 +51,9 @@ export default function LoginPage() {
       <main className={styles.page}>
         <header className={styles.top}>
           <div className={styles.brand}>
-            <div className={styles.mark}>m</div>
+            <div className={styles.mark}>{I.sparkle({ size: 16 })}</div>
             <div className={styles.wm}>
-              modle<small>사내 지식 AI</small>
+              AI 어시스턴트<small>사내 지식 기반</small>
             </div>
           </div>
           <span className={styles.pill}>
@@ -91,7 +92,7 @@ export default function LoginPage() {
       <div className={`${styles.corner} ${styles.bl}`}>
         <span className={styles.dotOk} />로컬 · 비공개
       </div>
-      <div className={`${styles.corner} ${styles.br}`}>modle · 사내 지식</div>
+      <div className={`${styles.corner} ${styles.br}`}>AI 어시스턴트 · 사내 지식</div>
     </div>
   );
 }

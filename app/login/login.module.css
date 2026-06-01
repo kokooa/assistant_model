@@ -80,17 +80,14 @@
   gap: 11px;
 }
 .mark {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  background: linear-gradient(135deg, oklch(0.32 0.06 275), oklch(0.5 0.18 285));
-  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(150deg, #3a5bd9, #6d5ce0);
+  color: #fff;
   display: grid;
   place-items: center;
-  font-family: var(--font-ibm-mono), monospace;
-  font-weight: 600;
-  font-size: 13px;
-  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.25), 0 4px 14px oklch(0.4 0.15 275 / 0.25);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.25), 0 2px 6px oklch(0.45 0.2 275 / 0.35);
 }
 .wm {
   font-size: 13.5px;
