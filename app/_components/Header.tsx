@@ -5,7 +5,7 @@ import { I } from "./icons";
 
 const TITLES: Record<string, string> = {
   "/": "홈",
-  "/sources": "지식 소스",
+  "/settings": "설정",
 };
 
 export function Header({ onOpenCmd }: { onOpenCmd: () => void }) {

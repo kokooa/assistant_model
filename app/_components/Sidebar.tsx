@@ -33,6 +33,15 @@ export function Sidebar() {
     </Link>
   );
 
+  // 항목이 없는 섹션은 헤더를 숨긴다.
+  const section = (label: string, items: NavItem[]) =>
+    items.length > 0 ? (
+      <>
+        <div className="sb-section">{label}</div>
+        {items.map(item)}
+      </>
+    ) : null;
+
   return (
     <aside className="sb">
       <div className="sb-head">
@@ -43,12 +52,9 @@ export function Sidebar() {
       </div>
 
       <nav className="sb-nav">
-        <div className="sb-section">워크스페이스</div>
-        {groups.workspace.map(item)}
-        <div className="sb-section">지식</div>
-        {groups.knowledge.map(item)}
-        <div className="sb-section">더보기</div>
-        {groups.more.map(item)}
+        {section("워크스페이스", groups.workspace)}
+        {section("지식", groups.knowledge)}
+        {section("더보기", groups.more)}
       </nav>
 
       <div className="sb-foot">

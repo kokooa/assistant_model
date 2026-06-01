@@ -43,7 +43,7 @@ export function CmdPalette({ onClose }: { onClose: () => void }) {
         action: () => (q ? ask(q) : go("/")),
       },
       { grp: "이동", ic: "home", label: "홈으로", meta: "G H", action: () => go("/") },
-      { grp: "이동", ic: "database", label: "지식 소스", meta: "G S", action: () => go("/sources") },
+      { grp: "이동", ic: "settings", label: "설정", meta: "G S", action: () => go("/settings") },
       { grp: "추천 질문", ic: "umbrella", label: "출산휴가는 며칠이야?", meta: "", action: () => ask("출산휴가는 며칠이야?") },
       { grp: "추천 질문", ic: "doc", label: "재택근무 신청 어떻게 해?", meta: "", action: () => ask("재택근무 신청 어떻게 해?") },
       { grp: "추천 질문", ic: "calendar", label: "연차 이월 되나요?", meta: "", action: () => ask("연차 이월 되나요?") },

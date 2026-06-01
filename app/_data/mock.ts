@@ -11,13 +11,7 @@ export interface NavItem {
 
 export const NAV: NavItem[] = [
   { id: "home", label: "물어보기", icon: "sparkle", group: "workspace", href: "/", badge: "AI" },
-  { id: "sources", label: "지식 소스", icon: "database", group: "workspace", href: "/sources" },
-  { id: "hr", label: "HR · 휴가", icon: "umbrella", group: "knowledge", href: "/sources?cat=hr" },
-  { id: "work", label: "근무 규정", icon: "doc", group: "knowledge", href: "/sources?cat=work" },
-  { id: "welfare", label: "복지", icon: "heart", group: "knowledge", href: "/sources?cat=welfare" },
-  { id: "safety", label: "안전 매뉴얼", icon: "shield", group: "knowledge", href: "/sources?cat=safety" },
-  { id: "notices", label: "공지", icon: "megaphone", group: "more", href: "/sources?cat=notice", badge: "3" },
-  { id: "settings", label: "설정", icon: "settings", group: "more", href: "/sources?cat=settings" },
+  { id: "settings", label: "설정", icon: "settings", group: "more", href: "/settings" },
 ];
 
 export interface SuggestedPrompt {
