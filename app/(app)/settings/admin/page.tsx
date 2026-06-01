@@ -3,17 +3,13 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { I } from "@/app/_components/icons";
+import { RoleSelect } from "./RoleSelect";
+import { DepartmentSelect } from "./DepartmentSelect";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const ROLE_LABEL: Record<string, string> = {
-  ADMIN: "관리자",
-  DEPT_ADMIN: "부서 관리자",
-  MEMBER: "구성원",
-};
-
-const USERS_COLS = "minmax(0,1fr) 140px 110px";
+const USERS_COLS = "minmax(0,1fr) 160px 130px";
 const DEPTS_COLS = "minmax(0,1fr) 90px";
 
 export default async function AdminPage() {
@@ -58,8 +54,8 @@ export default async function AdminPage() {
                   <div className="set-tbl-name">{u.name}</div>
                   <div className="set-tbl-sub">{u.email}</div>
                 </div>
-                <span className="set-tbl-cell">{u.department?.name ?? "—"}</span>
-                <span className="set-tbl-cell"><span className="set-tbl-tag">{ROLE_LABEL[u.role] ?? u.role}</span></span>
+                <DepartmentSelect userId={u.id} value={u.departmentId} options={depts.map((d) => ({ id: d.id, name: d.name }))} />
+                <RoleSelect userId={u.id} value={u.role} />
               </div>
             ))}
           </div>
