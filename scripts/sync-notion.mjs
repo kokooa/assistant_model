@@ -3,14 +3,34 @@ import { NotionToMarkdown } from "notion-to-md";
 import { PrismaClient } from "@prisma/client";
 import { embed, toVectorLiteral } from "../lib/embed.ts";
 
-// Notion 루트 페이지에서 자식 페이지를 재귀 크롤 → 청킹 → 로컬 임베딩 → pgvector 색인.
-// 필요 env: NOTION_TOKEN, NOTION_ROOT_PAGE_ID
+// Notion 루트 페이지에서 자식 페이지를 재귀 크롤 → 청킹 → 임베딩 → pgvector 색인.
+// 필요 env: NOTION_TOKEN, NOTION_ROOT_PAGE_ID (또는 --root <pageId>)
+// 사용:
+//   node --env-file=.env scripts/sync-notion.mjs                            # GLOBAL
+//   node --env-file=.env scripts/sync-notion.mjs --scope DEPARTMENT \
+//        --department "Finance" --root <pageId>
+const args = process.argv.slice(2);
+function getFlag(name) {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 && args[i + 1] ? args[i + 1] : undefined;
+}
+
 const token = process.env.NOTION_TOKEN;
-const root = process.env.NOTION_ROOT_PAGE_ID;
+const root = getFlag("root") ?? process.env.NOTION_ROOT_PAGE_ID;
+const scope = (getFlag("scope") ?? "GLOBAL").toUpperCase();
+const department = getFlag("department") ?? null;
 
 if (!token || !root) {
   console.error("NOTION_TOKEN / NOTION_ROOT_PAGE_ID 가 .env(.local) 에 필요해요.");
   console.error("notion.so/my-integrations 에서 토큰 발급 + 루트 페이지를 integration 에 연결하세요.");
+  process.exit(1);
+}
+if (!["GLOBAL", "DEPARTMENT"].includes(scope)) {
+  console.error("--scope 는 GLOBAL 또는 DEPARTMENT 여야 해요.");
+  process.exit(1);
+}
+if (scope === "DEPARTMENT" && !department) {
+  console.error("--scope DEPARTMENT 는 --department <부서명> 이 필요해요. (예: --department \"Finance\")");
   process.exit(1);
 }
 
@@ -115,7 +135,8 @@ async function collectPageIds(rootId, maxDepth = 4) {
 }
 
 async function main() {
-  console.log("Notion 페이지 수집 중…");
+  const scopeLabel = scope === "DEPARTMENT" ? `DEPARTMENT(${department})` : "GLOBAL";
+  console.log(`Notion 페이지 수집 중… (scope=${scopeLabel}, root=${root})`);
   const ids = await collectPageIds(root);
   console.log(`페이지 ${ids.length}개 발견. 색인 시작…`);
   let total = 0;
@@ -136,21 +157,23 @@ async function main() {
     for (const c of parts) {
       const emb = toVectorLiteral(await embed(`${title} ${c.heading}\n${c.text}`));
       await prisma.$executeRawUnsafe(
-        `INSERT INTO chunks (doc_id, doc_title, doc_url, heading, content, block_id, scope, embedding)
-         VALUES ($1,$2,$3,$4,$5,$6,'GLOBAL',$7::vector)`,
+        `INSERT INTO chunks (doc_id, doc_title, doc_url, heading, content, block_id, scope, department, embedding)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::vector)`,
         id,
         title,
         url,
         c.heading,
         c.text,
         c.blockId,
+        scope,
+        department,
         emb
       );
       total++;
     }
     console.log(`  ✓ ${title} — ${parts.length} chunks`);
   }
-  console.log(`완료: 페이지 ${ids.length}개, chunk ${total}개 색인됨.`);
+  console.log(`완료: 페이지 ${ids.length}개, chunk ${total}개 색인됨. (scope=${scopeLabel})`);
 }
 
 main()
