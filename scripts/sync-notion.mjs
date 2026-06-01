@@ -6,9 +6,9 @@ import { embed, toVectorLiteral } from "../lib/embed.ts";
 // Notion 루트 페이지에서 자식 페이지를 재귀 크롤 → 청킹 → 임베딩 → pgvector 색인.
 // 필요 env: NOTION_TOKEN, NOTION_ROOT_PAGE_ID (또는 --root <pageId>)
 // 사용:
-//   node --env-file=.env scripts/sync-notion.mjs                            # GLOBAL
-//   node --env-file=.env scripts/sync-notion.mjs --scope DEPARTMENT \
-//        --department "Finance" --root <pageId>
+//   node --env-file=.env --env-file=.env.local scripts/sync-notion.mjs                # GLOBAL
+//   node --env-file=.env --env-file=.env.local scripts/sync-notion.mjs \
+//        --scope DEPARTMENT --department "Finance" --root <pageId>
 const args = process.argv.slice(2);
 function getFlag(name) {
   const i = args.indexOf(`--${name}`);
