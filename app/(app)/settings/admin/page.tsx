@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { createDepartmentAction, deleteDepartmentAction } from "@/app/_actions/admin";
-import { SyncControl } from "./SyncControl";
 import { UserList } from "./UserList";
 import "./admin.css";
 
@@ -56,22 +55,11 @@ const ROLE_LABEL: Record<string, string> = {
   MEMBER: "구성원",
 };
 
-function relTime(d: Date | null): string {
-  if (!d) return "없음";
-  const min = Math.floor((Date.now() - d.getTime()) / 60000);
-  if (min < 1) return "방금";
-  if (min < 60) return `${min}분 전`;
-  const h = Math.floor(min / 60);
-  if (h < 24) return `${h}시간 전`;
-  const day = Math.floor(h / 24);
-  return day === 1 ? "어제" : `${day}일 전`;
-}
-
 export default async function AdminPage() {
   const session = await auth();
   if (session?.user?.role !== "ADMIN") notFound();
 
-  const [users, depts, chunkRows, docCountRows, lastSyncRows] = await Promise.all([
+  const [users, depts] = await Promise.all([
     prisma.user.findMany({
       include: { department: true },
       orderBy: [{ role: "asc" }, { name: "asc" }],
@@ -80,26 +68,8 @@ export default async function AdminPage() {
       include: { _count: { select: { users: true } } },
       orderBy: { name: "asc" },
     }),
-    prisma.$queryRawUnsafe<{ scope: string; department: string | null; n: bigint }[]>(
-      "SELECT scope, department, count(*)::bigint AS n FROM chunks GROUP BY scope, department ORDER BY scope, department"
-    ),
-    prisma.$queryRawUnsafe<{ n: bigint }[]>(
-      "SELECT count(DISTINCT doc_id)::bigint AS n FROM chunks"
-    ),
-    prisma.$queryRawUnsafe<{ last_sync: Date | null }[]>(
-      "SELECT max(updated_at) AS last_sync FROM chunks"
-    ),
   ]);
-  const totalChunks = chunkRows.reduce((s, r) => s + Number(r.n), 0);
-  const totalDocs = Number(docCountRows[0]?.n ?? 0);
-  const lastSync = lastSyncRows[0]?.last_sync ?? null;
-  const defaultRoot = process.env.NOTION_ROOT_PAGE_ID ?? "";
   const deptOptions = depts.map((d) => ({ id: d.id, name: d.name }));
-
-  // 동기화 카드 헤더 pill — 가장 큰 scope/dept 분포 표시
-  const topDist = chunkRows[0];
-  const pillKey = topDist ? `${topDist.scope}${topDist.department ? "·" + topDist.department : ""}` : "GLOBAL";
-  const pillVal = topDist ? Number(topDist.n) : 0;
 
   return (
     <div className="admin-console">
@@ -141,15 +111,6 @@ export default async function AdminPage() {
             <div className="ac-sub">
               {depts.length === 0 ? "아직 부서가 없어요" : depts.map((d) => d.name).join(" · ")}
             </div>
-          </div>
-          <div className="ac-card ac-stat">
-            <span className="ac-glyph"><Ico.doc /></span>
-            <span className="ac-cap">
-              <span className="ac-dot" style={{ background: "oklch(0.66 0.15 145)" }} />
-              <span className="ac-lbl">문서 종류</span>
-            </span>
-            <div className="ac-num">{totalDocs}</div>
-            <div className="ac-sub">{totalChunks} 하위문서</div>
           </div>
         </section>
 
@@ -194,27 +155,6 @@ export default async function AdminPage() {
               </div>
             </section>
 
-            {/* Notion 동기화 */}
-            <section className="ac-card">
-              <div className="ac-card-head">
-                <div className="ac-title">
-                  <span className="ac-ic"><Ico.notion /></span>
-                  <span className="ac-lbl-mono" style={{ fontSize: "11.5px", color: "var(--ac-ink)" }}>NOTION 동기화</span>
-                </div>
-                <span className="ac-badge-pill">
-                  <span className="k">{pillKey}</span>
-                  <span className="v">{pillVal}</span>
-                </span>
-              </div>
-              <div className="ac-card-body">
-                <SyncControl
-                  depts={deptOptions}
-                  defaultRoot={defaultRoot}
-                  lastSyncLabel={relTime(lastSync)}
-                  totalChunks={totalChunks}
-                />
-              </div>
-            </section>
           </div>
 
           <UserList

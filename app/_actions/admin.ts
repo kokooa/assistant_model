@@ -1,6 +1,5 @@
 "use server";
 
-import { spawn } from "node:child_process";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import {
@@ -61,35 +60,3 @@ export async function batchUpdateUsersAction(formData: FormData) {
   revalidatePath("/settings/admin");
 }
 
-export async function syncNotionAction(formData: FormData) {
-  await requireAdmin();
-  const scope = String(formData.get("scope") ?? "GLOBAL").toUpperCase();
-  const department = String(formData.get("department") ?? "").trim();
-  const rootPageId = String(formData.get("rootPageId") ?? "").trim();
-
-  if (scope !== "GLOBAL" && scope !== "DEPARTMENT") {
-    throw new Error("scope 는 GLOBAL 또는 DEPARTMENT 여야 해요");
-  }
-  if (scope === "DEPARTMENT" && !department) {
-    throw new Error("DEPARTMENT scope 일 때는 부서명을 골라야 해요");
-  }
-
-  // string concat — Turbopack 의 정적 module resolution 이 path.join 결과를
-  // module path 로 잘못 추론하는 문제를 회피.
-  const cwd = process.cwd();
-  const scriptPath = cwd + "/scripts/sync-notion.mjs";
-  const args: string[] = [scriptPath];
-  if (scope === "DEPARTMENT") args.push("--scope", "DEPARTMENT", "--department", department);
-  if (rootPageId) args.push("--root", rootPageId);
-
-  const child = spawn("node", args, {
-    cwd,
-    env: process.env,
-    detached: true,
-    stdio: "ignore",
-  });
-  child.unref();
-  // sync 가 끝나면 chunks 가 바뀌므로 revalidate 도 함께 — 화면의 chunk 수 갱신은
-  // 사용자가 새로고침할 때 반영(spawn 은 비동기라 revalidate 시점에는 변화 없음).
-  revalidatePath("/settings/admin");
-}
