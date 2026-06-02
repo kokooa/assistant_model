@@ -53,7 +53,7 @@ export default function LoginPage() {
 
       <main className="lp-stage">
         <h1 className="lp-hero">
-          언제든지,<br />
+          사내 정보,<br />
           <span className="em">무엇이든</span> 물어보세요<span className="dot">.</span>
         </h1>
         <p className="lp-sub">
