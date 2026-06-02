@@ -32,3 +32,6 @@ next-env.d.ts
 /handoff [0-9]*/
 *.jpeg
 *.jpg
+
+# axhub plugin 로컬 메타 (자동 재생성)
+/.axhub-state/
