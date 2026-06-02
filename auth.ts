@@ -1,26 +1,17 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import type { Role } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ensureUser } from "@/lib/auth";
+import authConfig from "./auth.config";
 
-// Google OAuth (axhub 규약: GOOGLE_CLIENT_ID/SECRET 을 env 로 읽음 — 배포 시 axhub 가
-// 회사 관리 자격증명을 주입). 회사 도메인(jocodingax.ai)만 허용. 부서/역할은 DB User 에서.
+// 회사 Google 클라이언트가 로컬에 없을 때 권한별 UI 검증용. NODE_ENV!=='production' 만 활성.
 const ALLOWED_DOMAIN = "jocodingax.ai";
-
-// dev 환경(NODE_ENV!=='production') 한정으로, 시드된 이메일만 통과시키는 가짜 로그인.
-// 회사 Google 클라이언트를 로컬에 셋업하지 못한 상태에서 권한별 UI 검증용.
 const isDevEnv = process.env.NODE_ENV !== "production";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
-      authorization: { params: { hd: ALLOWED_DOMAIN } },
-    }),
+    ...authConfig.providers,
     ...(isDevEnv
       ? [
           Credentials({
@@ -38,16 +29,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         ]
       : []),
   ],
-  session: { strategy: "jwt" },
-  pages: { signIn: "/login" },
   callbacks: {
-    authorized({ auth }) {
-      return !!auth?.user;
-    },
-    signIn({ user, profile }) {
-      const email = (user.email ?? profile?.email)?.toLowerCase();
-      return !!email && email.split("@")[1] === ALLOWED_DOMAIN;
-    },
+    ...authConfig.callbacks,
     async jwt({ token }) {
       if (token.email && token.role === undefined) {
         // 회사 도메인 로그인 시 자동 upsert. ADMIN_EMAILS 에 있는 이메일만 부트스트랩 ADMIN.
@@ -57,13 +40,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (dbUser.name) token.name = dbUser.name;
       }
       return token;
-    },
-    session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role as Role | undefined;
-        session.user.department = (token.department as string | null) ?? null;
-      }
-      return session;
     },
   },
 });

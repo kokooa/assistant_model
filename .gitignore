@@ -26,3 +26,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# design handoff (커밋 대상 아님)
+/handoff/
+/handoff [0-9]*/
+*.jpeg
+*.jpg
